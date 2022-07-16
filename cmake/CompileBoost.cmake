@@ -34,7 +34,7 @@ function(compile_boost)
 
   # Configure b2 command
   set(B2_COMMAND "./b2")
-  set(BOOST_COMPILER_FLAGS -fvisibility=hidden -fPIC -std=c++17 -w)
+  set(BOOST_COMPILER_FLAGS -fvisibility=hidden -fPIC -std=c++20 -w)
   set(BOOST_LINK_FLAGS "")
   if(APPLE OR ICX OR USE_LIBCXX)
     list(APPEND BOOST_COMPILER_FLAGS -stdlib=libc++ -nostdlib++)
@@ -73,8 +73,8 @@ function(compile_boost)
 
   set(BOOST_INSTALL_DIR "${CMAKE_BINARY_DIR}/boost_install")
   ExternalProject_add("${COMPILE_BOOST_TARGET}Project"
-    URL                "https://boostorg.jfrog.io/artifactory/main/release/1.78.0/source/boost_1_78_0.tar.bz2"
-    URL_HASH           SHA256=8681f175d4bdb26c52222665793eef08490d7758529330f98d3b29dd0735bccc
+    URL                "https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.tar.bz2"
+    URL_HASH           SHA256=6478edfe2f3305127cffe8caf73ea0176c53769f4bf1585be237eb30798c3b8e
     CONFIGURE_COMMAND  ${BOOTSTRAP_COMMAND}
                        ${BOOTSTRAP_ARGS}
                        --with-libraries=${BOOTSTRAP_LIBRARIES}
@@ -145,12 +145,12 @@ set(Boost_USE_STATIC_LIBS ON)
 
 # Clang and Gcc will have different name mangling to std::call_once, etc.
 if (UNIX AND CMAKE_CXX_COMPILER_ID MATCHES "Clang$" AND USE_LIBCXX)
-  list(APPEND CMAKE_PREFIX_PATH /opt/boost_1_78_0_clang)
-  set(BOOST_HINT_PATHS /opt/boost_1_78_0_clang)
+  list(APPEND CMAKE_PREFIX_PATH /opt/boost_1_83_0_clang)
+  set(BOOST_HINT_PATHS /opt/boost_1_83_0_clang)
   message(STATUS "Using Clang version of boost")
 else ()
-  list(APPEND CMAKE_PREFIX_PATH /opt/boost_1_78_0)
-  set(BOOST_HINT_PATHS /opt/boost_1_78_0)
+  list(APPEND CMAKE_PREFIX_PATH /opt/boost_1_83_0)
+  set(BOOST_HINT_PATHS /opt/boost_1_83_0)
   message(STATUS "Using g++ version of boost")
 endif ()
 
@@ -163,7 +163,7 @@ if(WIN32)
   # properly for config mode. So we use the old way on Windows
   #  find_package(Boost 1.72.0 EXACT QUIET REQUIRED CONFIG PATHS ${BOOST_HINT_PATHS})
   # I think depending on the cmake version this will cause weird warnings
-  find_package(Boost 1.78 COMPONENTS filesystem iostreams serialization system program_options)
+  find_package(Boost 1.83 COMPONENTS filesystem iostreams serialization system program_options)
   add_library(boost_target INTERFACE)
   target_link_libraries(boost_target INTERFACE Boost::boost Boost::filesystem Boost::iostreams Boost::serialization Boost::system)
 
@@ -172,7 +172,7 @@ if(WIN32)
   return()
 endif()
 
-find_package(Boost 1.78.0 EXACT QUIET COMPONENTS context filesystem iostreams program_options serialization system CONFIG PATHS ${BOOST_HINT_PATHS})
+find_package(Boost 1.83.0 EXACT QUIET COMPONENTS context filesystem iostreams program_options serialization system CONFIG PATHS ${BOOST_HINT_PATHS})
 set(FORCE_BOOST_BUILD OFF CACHE BOOL "Forces cmake to build boost and ignores any installed boost")
 
 # The precompiled boost silently broke in CI.  While investigating, I considered extending
